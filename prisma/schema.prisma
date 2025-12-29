@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model group_members {
+  id        Int      @id @default(autoincrement())
+  groupId   Int
+  memberId  Int
+  createdAt DateTime @db.DateTime(0)
+  updatedAt DateTime @db.DateTime(0)
+  groups    groups   @relation(fields: [groupId], references: [id], onDelete: Cascade, map: "group_members_ibfk_1")
+  members   members  @relation(fields: [memberId], references: [id], onDelete: Cascade, map: "group_members_ibfk_2")
+
+  @@index([groupId], map: "groupId")
+  @@index([memberId], map: "memberId")
+}
+
+model groups {
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  name          String          @db.VarChar(30)
+  createdAt     DateTime        @db.DateTime(0)
+  updatedAt     DateTime        @db.DateTime(0)
+  group_members group_members[]
+  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "groups_ibfk_1")
+
+  @@index([userId], map: "userId")
+}
+
+model manses {
+  id              Int       @id @default(autoincrement())
+  solarDate       DateTime  @db.Date
+  lunarDate       DateTime  @db.Date
+  season          String?   @db.VarChar(10)
+  seasonStartTime DateTime? @db.DateTime(0)
+  leapMonth       Boolean?
+  yearSky         String?   @db.VarChar(10)
+  yearGround      String?   @db.VarChar(10)
+  monthSky        String?   @db.VarChar(10)
+  monthGround     String?   @db.VarChar(10)
+  daySky          String?   @db.VarChar(10)
+  dayGround       String?   @db.VarChar(10)
+  createdAt       DateTime  @db.DateTime(0)
+  updatedAt       DateTime  @db.DateTime(0)
+}
+
+model member_manse {
+  id                  Int      @id @default(autoincrement())
+  memberId            Int
+  bigFortuneNumber    Int
+  bigFortuneStartYear Int
+  seasonStartTime     String?  @db.VarChar(20)
+  yearSky             String   @db.VarChar(10)
+  yearGround          String   @db.VarChar(10)
+  monthSky            String   @db.VarChar(10)
+  monthGround         String   @db.VarChar(10)
+  daySky              String   @db.VarChar(10)
+  dayGround           String   @db.VarChar(10)
+  timeSky             String?  @db.VarChar(10)
+  timeGround          String?  @db.VarChar(10)
+  createdAt           DateTime @db.DateTime(0)
+  updatedAt           DateTime @db.DateTime(0)
+  members             members  @relation(fields: [memberId], references: [id], onDelete: Cascade, map: "member_manse_ibfk_1")
+
+  @@index([memberId], map: "memberId")
+}
+
+model members {
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  type          String          @db.VarChar(6)
+  nickname      String          @db.VarChar(30)
+  gender        String          @db.VarChar(6)
+  birthdayType  String          @db.VarChar(5)
+  birthday      DateTime        @db.Date
+  time          String?         @db.VarChar(10)
+  createdAt     DateTime        @db.DateTime(0)
+  updatedAt     DateTime        @db.DateTime(0)
+  group_members group_members[]
+  member_manse  member_manse[]
+  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "members_ibfk_1")
+
+  @@index([userId], map: "userId")
+}
+
+model users {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique(map: "users_email_unique") @db.VarChar(100)
+  password  String    @db.VarChar(100)
+  createdAt DateTime  @db.DateTime(0)
+  updatedAt DateTime  @db.DateTime(0)
+  groups    groups[]
+  members   members[]
+}
