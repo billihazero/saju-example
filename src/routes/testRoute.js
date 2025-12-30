@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as testController from "@controllers/testController.js";
+import * as testController from "@controllers/test.controller.js";
 
 const router = express.Router();
 

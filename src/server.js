@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false })); //body parser: Form 요청을 req.body에 넣어준다.
 app.use(responseHandler);
 
-app.use("/", router);
+app.use("/api", router);
 
 app.use(errorHandler);
 
